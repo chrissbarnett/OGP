@@ -128,15 +128,51 @@ public class AugmentedSolrRecordRetrieverImpl implements AugmentedSolrRecordRetr
 	@Override
 	public AugmentedSolrRecord getOgcAugmentedSolrRecord(SolrRecord solrRecord) throws Exception {
 
-		AugmentedSolrRecord asr = getInfoAttempt(wmsRequester, DATA_ATTEMPTS, solrRecord);
-		OwsInfo wmsInfo =  OwsInfo.findWmsInfo(asr.getOwsInfo());
-		String type = wmsInfo.getInfoMap().get("owsType");
-		//String qualName = wmsInfo.getWmsResponseMap().get("qualifiedName");
-		String owsUrl = wmsInfo.getInfoMap().get("owsUrl");
-		Thread.sleep(PAUSE);
-
+		String type;
+		String owsUrl;
+		AugmentedSolrRecord asr = null;
+		
+		if (isArcGISServer(solrRecord))
+		{
+			//If it is from ArcGIS Server, there will be no ogcInfo associated with the ArcGIS Rest
+			asr = new AugmentedSolrRecord();
+			asr.setSolrRecord(solrRecord);
+			
+			//If the mapserver is ArcGIS Server rest service, we should handle the retrieval of OWSUrl and OWS type separately. 
+			if (LocationFieldUtils.hasWfsUrl(solrRecord.getLocation()))
+			{
+				//If it has the wfs url, downloading will come from wfs
+				type = "WFS";
+				owsUrl = LocationFieldUtils.getWfsUrl(solrRecord.getLocation());
+			}
+			else
+			{
+				//If it has only wcs url, download will come from wcs
+				type = "WCS";
+				owsUrl = LocationFieldUtils.getWcsUrl(solrRecord.getLocation());
+			}
+		}
+		else 
+		{
+		//else, the map server is geoserver, we could query the OWS Url as normal 
+			asr = getInfoAttempt(wmsRequester, DATA_ATTEMPTS, solrRecord);
+			OwsInfo wmsInfo =  OwsInfo.findWmsInfo(asr.getOwsInfo());
+			type = wmsInfo.getInfoMap().get("owsType");
+			//String qualName = wmsInfo.getWmsResponseMap().get("qualifiedName");
+			owsUrl = wmsInfo.getInfoMap().get("owsUrl");
+			Thread.sleep(PAUSE);
+		}
+		
 		return addNativeTypeInfo(asr, type, owsUrl);
 
+	}
+	
+	private Boolean isArcGISServer(SolrRecord solrRecord)
+	{
+		if (LocationFieldUtils.hasArcGISRestUrl(solrRecord.getLocation())&&LocationFieldUtils.hasWfsUrl(solrRecord.getLocation()))
+			return true;
+		else 
+			return false;
 	}
 	
 	

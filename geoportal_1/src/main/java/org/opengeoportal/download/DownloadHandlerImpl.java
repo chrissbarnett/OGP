@@ -88,7 +88,7 @@ public class DownloadHandlerImpl implements DownloadHandler {
 				return sr;
 			}
 		}
-		
+			
 		throw new Exception("Record not found.");
 	};
 	
@@ -178,9 +178,7 @@ public class DownloadHandlerImpl implements DownloadHandler {
 		layer.setRequestedBounds(bounds);
 		layer.setEmailAddress(emailAddress);
 		layer.setTargetDirectory(this.directoryRetriever.getDownloadDirectory());
-		if (LocationFieldUtils.hasWmsUrl(solrRecord.getLocation())){
-			addOwsInfo(layer);
-		}
+		addOwsInfo(layer);
 		return layer;
 	}
 	
