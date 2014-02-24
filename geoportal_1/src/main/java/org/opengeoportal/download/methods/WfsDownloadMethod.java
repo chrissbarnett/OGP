@@ -13,6 +13,7 @@ import org.opengeoportal.ogc.OgcInfoRequest;
 import org.opengeoportal.ogc.OwsInfo;
 import org.opengeoportal.ogc.wfs.WfsGetFeature;
 import org.opengeoportal.solr.SolrRecord;
+import org.opengeoportal.utilities.LocationFieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,12 +71,16 @@ public class WfsDownloadMethod extends AbstractDownloadMethod implements PerLaye
 		//really, we should check the get caps doc to see if this is a viable option...probably this should be done before/at the download prompt
 		String outputFormat = "shape-zip";
 		
-		String request =  WfsGetFeature.createWfsGetFeatureRequest(layerName, workSpace, nameSpace, outputFormat, bboxFilter);
-		return request;
+		return WfsGetFeature.createWfsGetFeatureRequest(layerName, workSpace, nameSpace, outputFormat, bboxFilter);
+
 	}
 	 
 	@Override
 	public List<String> getUrls(LayerRequest layer) throws Exception{
+		if(LocationFieldUtils.hasArcGISRestUrl(layer.getLayerInfo().getLocation()))
+		{
+			return null;
+		}
 		String url = layer.getWfsUrl();
 		this.checkUrl(url);
 		return urlToUrls(url);

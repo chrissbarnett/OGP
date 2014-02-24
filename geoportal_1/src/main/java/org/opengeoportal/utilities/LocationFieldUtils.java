@@ -53,6 +53,19 @@ public final class LocationFieldUtils {
 	}
 	
 	/**
+	 * Get the value in the "ArcGISRest" field from the Location field
+	 * 
+	 * @param locationField		The Solr record Location field as a String
+	 * @return	the url for the wms server for the layer, if the record has been populated correctly
+	 * @throws JsonParseException
+	 */
+	//Added by Allen Lin on Jan, 24, 2014
+	public static String getArcGISRestUrl(String locationField) throws JsonParseException{
+		return parseLocationFromKey(locationField, "ArcGISRest").get(0);
+
+	}
+	
+	/**
 	 * determines if the SolrRecord Location field contains a value for the key "wms"
 	 * 
 	 * @param locationField		The Solr record Location field as a String
@@ -61,6 +74,38 @@ public final class LocationFieldUtils {
 	public static Boolean hasWmsUrl(String locationField){
 		try {
 			return hasKey(locationField, "wms");
+		} catch (JsonParseException e) {
+
+		}
+		return false;
+	}
+	
+	/**
+	 * determines if the SolrRecord Location field contains a value for the key "wfs"
+	 * 
+	 * @param locationField		The Solr record Location field as a String
+	 * @return true if the SolrRecord Location field contains a key for "wms"
+	 */
+	// Added by Allen Lin on Jan, 24, 2014
+	public static Boolean hasWfsUrl(String locationField){
+		try {
+			return hasKey(locationField, "wfs");
+		} catch (JsonParseException e) {
+
+		}
+		return false;
+	}
+	
+	/**
+	 * determines if the SolrRecord Location field contains a value for the key "wfs"
+	 * 
+	 * @param locationField		The Solr record Location field as a String
+	 * @return true if the SolrRecord Location field contains a key for "wms"
+	 */
+	// Added by Allen Lin on Jan, 24, 2014
+	public static Boolean hasArcGISRestUrl(String locationField){
+		try {
+			return hasKey(locationField, "ArcGISRest");
 		} catch (JsonParseException e) {
 
 		}

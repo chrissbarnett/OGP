@@ -18,6 +18,7 @@ import org.opengeoportal.download.types.LayerRequest;
 import org.opengeoportal.layer.BoundingBox;
 import org.opengeoportal.solr.SolrRecord;
 import org.opengeoportal.utilities.DirectoryRetriever;
+import org.opengeoportal.utilities.LocationFieldUtils;
 import org.opengeoportal.utilities.OgpFileUtils;
 import org.opengeoportal.utilities.http.HttpRequester;
 import org.slf4j.Logger;
@@ -180,10 +181,9 @@ public abstract class AbstractDownloadMethod {
 	
 	public Boolean hasRequiredInfo(LayerRequest layerRequest){
 		try {
-			if (getUrls(layerRequest) != null && !getUrls(layerRequest).isEmpty()){
+			if (getUrls(layerRequest) != null && !getUrls(layerRequest).isEmpty())
 				return true;
-			}
-
+			return false;
 		} catch (Exception e){
 			logger.debug(e.getMessage());	
 		}
